@@ -11,6 +11,8 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\UtilisateurRepository;
 use App\State\UserPasswordHasher;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -65,6 +67,14 @@ class Utilisateur implements PasswordAuthenticatedUserInterface, UserInterface
 
     #[ORM\OneToOne(mappedBy: 'utilisateur', cascade: ['persist', 'remove'])]
     private ?AbonnementUtilisateur $abonnementUtilisateur = null;
+
+    #[ORM\ManyToMany(targetEntity: Ville::class, inversedBy: 'utilisateurs')]
+    private Collection $ville;
+
+    public function __construct()
+    {
+        $this->ville = new ArrayCollection();
+    }
 
     public function getUserIdentifier(): string
     {
@@ -200,6 +210,30 @@ class Utilisateur implements PasswordAuthenticatedUserInterface, UserInterface
         }
 
         $this->abonnementUtilisateur = $abonnementUtilisateur;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Ville>
+     */
+    public function getVille(): Collection
+    {
+        return $this->ville;
+    }
+
+    public function addVille(Ville $ville): static
+    {
+        if (!$this->ville->contains($ville)) {
+            $this->ville->add($ville);
+        }
+
+        return $this;
+    }
+
+    public function removeVille(Ville $ville): static
+    {
+        $this->ville->removeElement($ville);
 
         return $this;
     }

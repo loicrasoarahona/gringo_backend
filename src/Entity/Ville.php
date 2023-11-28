@@ -23,9 +23,13 @@ class Ville
     #[ORM\OneToMany(mappedBy: 'ville', targetEntity: Annonce::class)]
     private Collection $annonces;
 
+    #[ORM\ManyToMany(targetEntity: Utilisateur::class, mappedBy: 'ville')]
+    private Collection $utilisateurs;
+
     public function __construct()
     {
         $this->annonces = new ArrayCollection();
+        $this->utilisateurs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -70,6 +74,33 @@ class Ville
             if ($annonce->getVille() === $this) {
                 $annonce->setVille(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Utilisateur>
+     */
+    public function getUtilisateurs(): Collection
+    {
+        return $this->utilisateurs;
+    }
+
+    public function addUtilisateur(Utilisateur $utilisateur): static
+    {
+        if (!$this->utilisateurs->contains($utilisateur)) {
+            $this->utilisateurs->add($utilisateur);
+            $utilisateur->addVille($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUtilisateur(Utilisateur $utilisateur): static
+    {
+        if ($this->utilisateurs->removeElement($utilisateur)) {
+            $utilisateur->removeVille($this);
         }
 
         return $this;
