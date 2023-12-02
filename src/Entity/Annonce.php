@@ -3,60 +3,93 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Repository\AnnonceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AnnonceRepository::class)]
-#[ApiResource]
+#[ApiResource(operations: [
+    new GetCollection(normalizationContext: ['groups' => ['annonce:collection', 'user:collection', 'ville:collection', 'typeVehicule:collection', 'annoncePhoto:collection']]),
+    new Post(),
+    new Get(),
+    new Put(),
+    new Patch(),
+    new Delete(),
+],)]
 class Annonce
 {
+    #[Groups(['annonce:collection'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['annonce:collection'])]
     #[ORM\Column(length: 255)]
     private ?string $marque = null;
 
+    #[Groups(['annonce:collection'])]
     #[ORM\Column(length: 255)]
     private ?string $modele = null;
 
+    #[Groups(['annonce:collection'])]
     #[ORM\ManyToOne(inversedBy: 'annonces')]
     private ?TypeVehicule $typeVehicule = null;
 
+    #[Groups(['annonce:collection'])]
     #[ORM\ManyToOne(inversedBy: 'annonces')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Ville $ville = null;
 
+    #[Groups(['annonce:collection'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $comune = null;
 
+    #[Groups(['annonce:collection'])]
     #[ORM\Column]
     private ?int $nbPlaces = null;
 
+    #[Groups(['annonce:collection'])]
     #[ORM\Column(length: 255)]
     private ?string $telephone = null;
 
+    #[Groups(['annonce:collection'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $whatsapp = null;
 
+    #[Groups(['annonce:collection'])]
     #[ORM\Column]
     private ?bool $avecChauffeur = null;
 
+    #[Groups(['annonce:collection'])]
     #[ORM\Column]
     private ?bool $chauffeurObligatoire = null;
 
+    #[Groups(['annonce:collection'])]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
+    #[Groups(['annonce:collection'])]
     #[ORM\OneToMany(mappedBy: 'annonce', targetEntity: AnnoncePhoto::class)]
     private Collection $annoncePhotos;
 
+    #[Groups(['annonce:collection'])]
     #[ORM\OneToOne(mappedBy: 'annonce', cascade: ['persist', 'remove'])]
     private ?BoostAnnonce $boostAnnonce = null;
+
+    #[Groups(['annonce:collection'])]
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Utilisateur $utilisateur = null;
 
     public function __construct()
     {
@@ -243,6 +276,18 @@ class Annonce
         }
 
         $this->boostAnnonce = $boostAnnonce;
+
+        return $this;
+    }
+
+    public function getUtilisateur(): ?Utilisateur
+    {
+        return $this->utilisateur;
+    }
+
+    public function setUtilisateur(?Utilisateur $utilisateur): static
+    {
+        $this->utilisateur = $utilisateur;
 
         return $this;
     }
