@@ -25,6 +25,26 @@ class UserController extends AbstractController
         $this->serializer = $serializer;
     }
 
+    #[Route('/utilisateurs/uploadLogo', methods: ['POST'])]
+    public function uploadImage(Request $request)
+    {
+        // Récupérez le fichier image depuis la requête
+        $imageFile = $request->files->get('image');
+
+
+        // Gérez le téléchargement de l'image vers un répertoire
+        $imageFileName = md5(uniqid()) . '.' . $imageFile->guessExtension();
+
+        $imageFile->move(
+            $this->getParameter('photo_directory'), // Répertoire de destination (configurez cela dans config/services.yaml)
+            $imageFileName
+        );
+
+        // Traitez l'image comme vous le souhaitez (par exemple, enregistrez le nom du fichier dans une base de données)
+
+        return new JsonResponse($imageFileName);
+    }
+
     #[Route('/user_info', name: 'app_user_info', methods: ['GET'])]
     public function getUserInfo()
     {

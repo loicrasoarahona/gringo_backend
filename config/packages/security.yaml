@@ -19,7 +19,7 @@ security:
             pattern : ^/api/utilisateurs
             security: true
             stateless: true
-            jwt : ~
+            # jwt : ~
 
         authenticated :
             pattern: ^/user_info
