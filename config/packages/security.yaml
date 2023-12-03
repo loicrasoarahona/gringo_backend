@@ -9,7 +9,7 @@ security:
         users :
             entity:
                 class: App\Entity\Utilisateur
-                property: email
+                property: telephone
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -30,7 +30,7 @@ security:
             stateless: false
             json_login:
                 check_path: auth # The name in routes.yaml is enough for mapping
-                username_path: email
+                username_path: telephone
                 password_path: mdp
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure

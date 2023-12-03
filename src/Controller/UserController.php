@@ -30,7 +30,7 @@ class UserController extends AbstractController
     {
         $user = $this->security->getUser();
 
-        $normalizedUser = $this->serializer->normalize($user, null, ['groups' => 'user:collection']);
+        $normalizedUser = $this->serializer->normalize($user);
 
 
         return $this->json($normalizedUser);
@@ -42,7 +42,7 @@ class UserController extends AbstractController
         EntityManagerInterface $entityManager,
         SerializerInterface $serializer,
         UserPasswordHasherInterface $passwordHasher
-    ){
+    ) {
         $data = json_decode($request->getContent(), true);
         $entity = new Utilisateur();
         $entity->setNom($data["firstname"] . " " . $data["lastname"]);

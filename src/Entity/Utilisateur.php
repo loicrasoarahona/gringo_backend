@@ -78,7 +78,7 @@ class Utilisateur implements PasswordAuthenticatedUserInterface, UserInterface
 
     public function getUserIdentifier(): string
     {
-        return $this->getEmail();
+        return $this->getTelephone();
     }
 
     public function eraseCredentials()
