@@ -50,24 +50,31 @@ class Utilisateur implements PasswordAuthenticatedUserInterface, UserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $plain_password = null;
 
+    #[Groups(['user:collection'])]
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
+    #[Groups(['user:collection'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom = null;
 
+    #[Groups(['user:collection'])]
     #[ORM\Column(length: 255)]
     private ?string $telephone = null;
 
+    #[Groups(['user:collection'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $whatsapp = null;
 
+    #[Groups(['user:collection'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $logo = null;
 
+    #[Groups(['user:collection'])]
     #[ORM\OneToOne(mappedBy: 'utilisateur', cascade: ['persist', 'remove'])]
     private ?AbonnementUtilisateur $abonnementUtilisateur = null;
 
+    #[Groups(['user:collection'])]
     #[ORM\ManyToMany(targetEntity: Ville::class, inversedBy: 'utilisateurs')]
     private Collection $ville;
 

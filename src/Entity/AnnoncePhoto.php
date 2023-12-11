@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
@@ -22,6 +24,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     new Patch(),
     new Delete(),
 ],)]
+#[ApiFilter(SearchFilter::class, properties: ['annonce.id' => 'exact'])]
 class AnnoncePhoto
 {
     #[Groups(['annoncePhoto:collection'])]
@@ -34,6 +37,7 @@ class AnnoncePhoto
     #[ORM\Column(length: 255)]
     private ?string $filename = null;
 
+    #[Groups(['annoncePhoto:collection'])]
     #[ORM\ManyToOne(inversedBy: 'annoncePhotos')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Annonce $annonce = null;

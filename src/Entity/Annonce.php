@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(operations: [
     new GetCollection(normalizationContext: ['groups' => ['annonce:collection', 'user:collection', 'ville:collection', 'typeVehicule:collection', 'annoncePhoto:collection']]),
     new Post(),
-    new Get(),
+    new Get(normalizationContext: ['groups' => ['annonce:collection', 'user:collection', 'ville:collection', 'typeVehicule:collection', 'annoncePhoto:collection']]),
     new Put(),
     new Patch(),
     new Delete(),
@@ -31,7 +31,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 class Annonce
 {
-    #[Groups(['annonce:collection'])]
+    #[Groups(['annonce:collection', 'annoncePhoto:collection'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -95,9 +95,21 @@ class Annonce
     #[ORM\JoinColumn(nullable: false)]
     private ?Utilisateur $utilisateur = null;
 
+    #[Groups(['annonce:collection'])]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $date = null;
+
+    #[ORM\OneToMany(mappedBy: 'annonce', targetEntity: AnnonceCommentaire::class)]
+    private Collection $annonceCommentaires;
+
+    #[ORM\OneToMany(mappedBy: 'annonce', targetEntity: AnnonceEvaluation::class)]
+    private Collection $annonceEvaluations;
+
     public function __construct()
     {
         $this->annoncePhotos = new ArrayCollection();
+        $this->annonceCommentaires = new ArrayCollection();
+        $this->annonceEvaluations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -292,6 +304,78 @@ class Annonce
     public function setUtilisateur(?Utilisateur $utilisateur): static
     {
         $this->utilisateur = $utilisateur;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTimeInterface $date): static
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AnnonceCommentaire>
+     */
+    public function getAnnonceCommentaires(): Collection
+    {
+        return $this->annonceCommentaires;
+    }
+
+    public function addAnnonceCommentaire(AnnonceCommentaire $annonceCommentaire): static
+    {
+        if (!$this->annonceCommentaires->contains($annonceCommentaire)) {
+            $this->annonceCommentaires->add($annonceCommentaire);
+            $annonceCommentaire->setAnnonce($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAnnonceCommentaire(AnnonceCommentaire $annonceCommentaire): static
+    {
+        if ($this->annonceCommentaires->removeElement($annonceCommentaire)) {
+            // set the owning side to null (unless already changed)
+            if ($annonceCommentaire->getAnnonce() === $this) {
+                $annonceCommentaire->setAnnonce(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AnnonceEvaluation>
+     */
+    public function getAnnonceEvaluations(): Collection
+    {
+        return $this->annonceEvaluations;
+    }
+
+    public function addAnnonceEvaluation(AnnonceEvaluation $annonceEvaluation): static
+    {
+        if (!$this->annonceEvaluations->contains($annonceEvaluation)) {
+            $this->annonceEvaluations->add($annonceEvaluation);
+            $annonceEvaluation->setAnnonce($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAnnonceEvaluation(AnnonceEvaluation $annonceEvaluation): static
+    {
+        if ($this->annonceEvaluations->removeElement($annonceEvaluation)) {
+            // set the owning side to null (unless already changed)
+            if ($annonceEvaluation->getAnnonce() === $this) {
+                $annonceEvaluation->setAnnonce(null);
+            }
+        }
 
         return $this;
     }
