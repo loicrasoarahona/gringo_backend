@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
@@ -25,6 +27,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
     new Patch(),
     new Delete(),
 ],)]
+#[ApiFilter(SearchFilter::class, properties: ['marque' => 'partial'])]
+
 class Annonce
 {
     #[Groups(['annonce:collection'])]
